@@ -158,7 +158,10 @@ namespace University.BLogic
                 Console.WriteLine("Insert University Address.");
                 string? address = Console.ReadLine();
 
-                UniModel university = new(name, address);
+                UniModel university = new(){
+                    Name = name!,
+                    Address = address!,
+                };
 
                 string fileName = Convert.ToString(ConfigurationManager.AppSettings["FileUniversityJson"]);
                 //ExportJson<UniModel>(fileName);
@@ -175,26 +178,28 @@ namespace University.BLogic
             try
             {
                 Console.Write("Enter Employee Full Name: ");
-                string fullName = Console.ReadLine();
+                string? fullName = Console.ReadLine();
 
                 Console.Write("Enter Gender (Male/Female): ");
-                string gender = Console.ReadLine();
+                string? gender = Console.ReadLine();
 
                 Console.Write("Enter Address: ");
-                string address = Console.ReadLine();
+                string? address = Console.ReadLine();
 
                 Console.Write("Enter Email: ");
-                string email = Console.ReadLine();
+                string? email = Console.ReadLine();
 
                 Console.Write("Enter Phone Number: ");
-                string phone = Console.ReadLine();
+                string? phone = Console.ReadLine();
 
                 Console.Write("Enter Birth Year (YYYY-MM-DD): ");
-                DateTime birthYear = DateTime.Parse(Console.ReadLine());
-
+                DateTime? birthYear = null;
+               
+                DateTime.TryParse(Console.ReadLine(), CultureInfo.InvariantCulture, DateTimeStyles.None, out birthYear);
+        
                 Console.Write("Is the Employee full-time? (true/false): ");
-                bool isFullTime = bool.Parse(Console.ReadLine());
-
+                _ = bool.TryParse(Console.ReadLine(), out bool isFullTime);
+            
                 string maritalStatus = GetMaritialStatus();
                 string role = GetRole();
                 string faculty = GetFaculty();
