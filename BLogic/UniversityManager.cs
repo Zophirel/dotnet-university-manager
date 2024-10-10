@@ -51,20 +51,21 @@ namespace University.BLogic
         /// </summary>
         /// <returns>A string representing the integer that rapresent the correct Faculties enum.</returns>
         private static string GetFaculty(){
-                string prompt =
-                    """
-                    1 - COMPUTER_SCIENCE
-                    2 - BUSINESS_AND_MANAGEMENT,
-                    3 - MATHEMATICS,
-                    4 - PSYCHOLOGY,
-                    5 - LAW,
-                    6 - FASHION_DESIGN,
-                    7 - NURSING,
-                    8 - LANGUAGES,
-                    9 - BIOLOGY
-                    """;
+            string prompt =
+                """
+                Select Faculty:
+                1 - COMPUTER_SCIENCE
+                2 - BUSINESS_AND_MANAGEMENT,
+                3 - MATHEMATICS,
+                4 - PSYCHOLOGY,
+                5 - LAW,
+                6 - FASHION_DESIGN,
+                7 - NURSING,
+                8 - LANGUAGES,
+                9 - BIOLOGY
+                """;
 
-                return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 10);
+            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 10);
         }
         
         /// <summary>
@@ -147,6 +148,9 @@ namespace University.BLogic
             return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 10);
         }
 
+        private static string GetGender() => GetValidInput("Enter Gender (Male / Female / X): ", input => string.IsNullOrEmpty(input) && (input?.ToUpper() == "MALE" || input?.ToUpper() == "FEMALE" || input?.ToUpper() == "X"));
+
+
         #region Create
         public void InsertUniversity()
         {
@@ -173,42 +177,34 @@ namespace University.BLogic
             }
         }
 
-        public void InsertEmployee()
+        public static void InsertEmployee()
         {
             try
             {
-                Console.Write("Enter Employee Full Name: ");
-                string? fullName = Console.ReadLine();
-
-                Console.Write("Enter Gender (Male/Female): ");
-                string? gender = Console.ReadLine();
-
-                Console.Write("Enter Address: ");
-                string? address = Console.ReadLine();
-
-                Console.Write("Enter Email: ");
-                string? email = Console.ReadLine();
-
-                Console.Write("Enter Phone Number: ");
-                string? phone = Console.ReadLine();
-
-                Console.Write("Enter Birth Year (YYYY-MM-DD): ");
-                DateTime? birthYear = null;
-               
-                DateTime.TryParse(Console.ReadLine(), CultureInfo.InvariantCulture, DateTimeStyles.None, out birthYear);
-        
-                Console.Write("Is the Employee full-time? (true/false): ");
-                _ = bool.TryParse(Console.ReadLine(), out bool isFullTime);
-            
-                string maritalStatus = GetMaritialStatus();
-                string role = GetRole();
-                string faculty = GetFaculty();
                 
-                Console.Write("Enter Hiring Year (YYYY-MM-DD): ");
-                DateTime hiringYear = DateTime.Parse(Console.ReadLine());
+                string? fullName = GetValidInput("Enter Employee Full Name: ", input => string.IsNullOrEmpty(input));
 
-                Console.Write("Enter Salary: ");
-                decimal salary = decimal.Parse(Console.ReadLine());
+                string? gender = GetGender();
+
+                string? address = GetValidInput("Enter Address: ", input => !string.IsNullOrEmpty(input));
+
+                string? email = GetValidInput("Enter Email: ", input => !string.IsNullOrEmpty(input));
+
+                string? phone = GetValidInput("Enter Phone Number: ", input => !string.IsNullOrEmpty(input));
+
+                string birthYearString = GetValidInput("Enter Birth Year (YYYY-MM-DD): ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+
+                string isFullTimeString = GetValidInput("Is the Employee full-time? (true/false): ", input => !string.IsNullOrEmpty(input) && bool.TryParse(input, out _));
+                 
+                string maritalStatus = GetMaritialStatus();
+
+                string role = GetRole();
+                
+                string faculty = GetFaculty();
+            
+                string hiringYearString = GetValidInput("Enter Hiring Day (YYYY-MM-DD): ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                
+                string salaryString = GetValidInput("Enter Salary: ", input => !string.IsNullOrEmpty(input) && decimal.TryParse(input, out _));  
 
                 int roleint = int.Parse(role);
                 int statusint = int.Parse(maritalStatus);
@@ -220,16 +216,18 @@ namespace University.BLogic
                     Address = address,
                     Email = email,
                     Phone = phone,
-                    BirthYear = birthYear,
-                    IsFullTime = isFullTime,
+                    BirthYear = DateTime.Parse(birthYearString),
+                    IsFullTime = bool.Parse(isFullTimeString),
                     MaritalStatus = (Status)statusint,
                     Role = (Roles)roleint,
                     Faculty = (Faculties) int.Parse(faculty),
-                    HiringYear = hiringYear,
-                    Salary = salary
+                    HiringYear = DateTime.Parse(hiringYearString),
+                    Salary = decimal.Parse(salaryString)
                 };
 
-                ExportJson<Employee>([employee]);
+                var updatedList = ImportFromJson<Employee>();
+                updatedList.Add(employee);
+                ExportJson(updatedList);
 
             }
             catch (Exception ex)
@@ -242,10 +240,8 @@ namespace University.BLogic
         static void InsertStudent()
         {
 
-            Console.Write("Enter Student Full Name: ");
-            string fullName = Console.ReadLine();
-
-            Console.Write("Enter Gender (Male/Female): ");
+            string? fullName = GetValidInput("Enter Student Full Name: ", input => !string.IsNullOrEmpty(input));
+            
             string gender = Console.ReadLine();
 
             Console.Write("Enter Address: ");
@@ -723,7 +719,7 @@ namespace University.BLogic
 
                         case "2":
                             
-                            prof.Gender = GetValidInput("Insert new gender (Male / Female / X)", input => input?.ToUpper() == "MALE" || input?.ToUpper() == "FEMALE" || input?.ToUpper() == "X");
+                            prof.Gender = GetGender(); 
                             break;
 
                         case "3":
@@ -738,8 +734,8 @@ namespace University.BLogic
 
                         case "5":
                             Console.WriteLine("Insert new phone (10 digits)");
-                            string phone = Console.ReadLine();
-                            while (phone.Length != 10 || !long.TryParse(phone, out _))
+                            string? phone = Console.ReadLine();
+                            while (phone?.Length != 10 || !long.TryParse(phone, out _))
                             {
                                 Console.WriteLine("Invalid input - the phone number must be 10 digits.");
                                 phone = Console.ReadLine();
@@ -1064,13 +1060,11 @@ namespace University.BLogic
                 }
                 else
                 {
-
-                    Console.WriteLine("Insert the ID of the employee");
-                    string? id = Console.ReadLine();
+                    string? id = GetValidInput("Insert the ID of the employee", input => !string.IsNullOrEmpty(input) && Guid.TryParse(input, out _));
 
                     while (loop)
                     {
-                        foreach (char s in id)
+                        
                             
                         if (id?.Length == 36)
                         {
@@ -1088,7 +1082,7 @@ namespace University.BLogic
 
                     do
                     {
-                        loop = true;
+                    
                         Employee? emp = employees.First(emp => emp.Id == Guid.Parse(id!));
                         Console.WriteLine($"Changing employee {emp.FullName} infos");
                         Console.WriteLine(separator);
@@ -1099,58 +1093,28 @@ namespace University.BLogic
                         switch (n)
                         {
                             case "1":
-                                Console.WriteLine("Insert new name ");
-                                emp.FullName = Console.ReadLine();
-
+                                emp.FullName = GetValidInput("Insert new name ", input => !string.IsNullOrEmpty(input));
                                 break;
 
                             case "2":
-                                Console.WriteLine("Insert new gender ");
-                                emp.Gender = Console.ReadLine();
+                                emp.Gender = GetGender();
                                 break;
 
                             case "3":
-                                Console.WriteLine("Insert new address ");
-                                emp.Address = Console.ReadLine();
+                                emp.Address = GetValidInput("Insert new address ", input => !string.IsNullOrEmpty(input));
                                 break;
 
                             case "4":
-                                Console.WriteLine("Insert new email ");
-                                emp.Email = Console.ReadLine();
+                                emp.Email = GetValidInput("Insert new email", input => !string.IsNullOrEmpty(input));
                                 break;
 
                             case "5":
-                                while (loop)
-                                {
-                                    Console.WriteLine("Insert new phone ");
-                                    string phone = Console.ReadLine();
-
-                                    for (int i = 0; i < phone.Length; i++)
-                                    {
-                                        if (!Char.IsDigit(phone[i]))
-                                        {
-                                            if (!(i == 0 && phone[i] == '+'))
-                                                loop = false;
-                                        }
-                                    }
-
-                                    if (phone.Length == 10 && loop)
-                                    {
-                                        emp.Phone = phone;
-                                        loop = false;
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Invalid input - the phone number must be + 10 numbers");
-                                        loop = true;
-                                    }
-                                }
-
+                                string phone = GetValidInput("Insert new phone ", input => !string.IsNullOrEmpty(input));
                                 break;
 
                             case "6":
-                                Console.WriteLine("Insert new birth year ");
-                                emp.BirthYear = DateTime.Parse(Console.ReadLine()); // not sure, devo specificare il formato della data???
+                                string birthYearString = GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                emp.BirthYear = DateTime.Parse(birthYearString);
                                 break;
 
                             case "7":
@@ -1163,15 +1127,13 @@ namespace University.BLogic
                                 char answer = Console.ReadKey().KeyChar;
                                 if (answer == 'y')
                                 {
-                                    emp.IsFullTime = !(emp.IsFullTime); //dovrebbe andare ma ho i miei dubbi
+                                    emp.IsFullTime = !emp.IsFullTime; //dovrebbe andare ma ho i miei dubbi
                                 }
                                 break;
 
                             case "9":
-                                Console.WriteLine("Insert new Faculty (insert number)"); //hope
-                                string faculty1 = GetValidInput(prompt2, input => int.Parse(input!) > 0 && int.Parse(input!) < 10);
-                                var newFacultyVar = (Faculties)Enum.Parse(typeof(BLogic.Faculties), faculty1!.ToUpper()); // new faculty
-                                emp.Faculty = newFacultyVar; //change faculty
+                                string faculty1 = GetFaculty();
+                                emp.Faculty = (Faculties)int.Parse(faculty1); //change faculty
                                 break;
 
                             case "10":
