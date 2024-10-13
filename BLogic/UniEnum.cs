@@ -1,4 +1,14 @@
-﻿namespace University.BLogic
+﻿/*
+*    THIS FILE IS COAUTHORED BY:
+*    - Francesco Piersanti
+*    - Delia Ricca
+*    - Andreea Cojocaru
+*    - Mattia Andrea Tarantino
+*    All the enums written here are the result of a collective brainstormig work.
+*/
+
+
+namespace University.BLogic
 {
     public enum StartMenuFunctions
     {
