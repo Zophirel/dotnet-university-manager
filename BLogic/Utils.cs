@@ -122,11 +122,9 @@ namespace University.BLogic {
             }
 
             Console.WriteLine(faculties[0].Exams.Count);
-
-    
             var option = new JsonSerializerOptions { WriteIndented = true };
             string json = JsonSerializer.Serialize(faculties, option);
-            File.WriteAllText(ConfigurationManager.AppSettings["FileFacultiesJson"], json);
+            File.WriteAllText(ConfigurationManager.AppSettings["FileFacultiesJson"]!, json);
         }
     }    
 }

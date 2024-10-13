@@ -1,6 +1,4 @@
-﻿using System.Configuration;
-using University.BLogic;
-using University.DataModel;
+﻿using University.DataModel;
 
 namespace University
 {
@@ -9,8 +7,7 @@ namespace University
         static void Main(string[] args)
         {
             try{
-        
-    
+                Menu.ShowMainMenu();
             } catch (Exception e)
             {
                 Console.WriteLine(e.Message);
