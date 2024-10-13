@@ -149,7 +149,7 @@ namespace University.BLogic
         }
 
         private static string GetGender() => GetValidInput("Enter Gender (Male / Female / X): ", input => string.IsNullOrEmpty(input) && (input?.ToUpper() == "MALE" || input?.ToUpper() == "FEMALE" || input?.ToUpper() == "X"));
-
+        private static string GetValidId() => GetValidInput($"Enter the ID: ", input => !string.IsNullOrEmpty(input) && Guid.TryParse(input, out _));
 
         #region Create
         public void InsertUniversity()
@@ -177,6 +177,9 @@ namespace University.BLogic
             }
         }
 
+        /// <summary>
+        /// Inserts a new Employee object into the system by collecting user input and saving it to a JSON file.
+        /// </summary>
         public static void InsertEmployee()
         {
             try
@@ -236,42 +239,37 @@ namespace University.BLogic
             }
         }
 
-        // Function to create a Student object
-        static void InsertStudent()
+        
+        /// <summary>
+        /// Inserts a new Student object into the system by collecting user input and saving it to a JSON file.
+        /// </summary>
+        public static void InsertStudent()
         {
-
+        
             string? fullName = GetValidInput("Enter Student Full Name: ", input => !string.IsNullOrEmpty(input));
-            
-            string gender = Console.ReadLine();
-
-            Console.Write("Enter Address: ");
-            string address = Console.ReadLine();
-
-            Console.Write("Enter Email: ");
-            string email = Console.ReadLine();
-
-            Console.Write("Enter Phone Number: ");
-            string phone = Console.ReadLine();
-
-            Console.Write("Enter Birth Year (YYYY-MM-DD): ");
-            DateTime birthYear = DateTime.Parse(Console.ReadLine());
-
-            Console.Write("Is the student full-time? (true/false): ");
-            bool isFullTime = bool.Parse(Console.ReadLine());
-
+        
+            string gender = GetGender();
+        
+            string address = GetValidInput("Enter Student Address: ", input => !string.IsNullOrEmpty(input));
+        
+            string email = GetValidInput("Enter Student Email: ", input => !string.IsNullOrEmpty(input));
+        
+            string phone = GetValidInput("Enter Student Phone Number: ", input => !string.IsNullOrEmpty(input));
+        
+            string birthYearString = GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+        
+            string isFullTime = GetValidInput("Enter Full Time (true/false) ", input => string.IsNullOrEmpty(input) && (input?.ToUpper() == "TRUE" || input?.ToUpper() == "FALSE"));
+        
             string maritalStatus = GetMaritialStatus();
-
-            Console.Write("Enter Matricola (Student ID): ");
-            string matricola = Console.ReadLine();
-
-            Console.Write("Enter Registration Year (YYYY-MM-DD): ");
-            DateTime registrationYear = DateTime.Parse(Console.ReadLine());
-
+        
+            string matricola = GetValidInput("Enter Student Matricola: ", input => !string.IsNullOrEmpty(input) && input.Length == 7);
+        
+            string registrationYear = GetValidInput("Insert new registration year (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+        
             string degree = GetDegree();
-
-            Console.Write("Enter ISEE (Economic Indicator): ");
-            decimal isee = decimal.Parse(Console.ReadLine());
-
+        
+            string isee = GetValidInput("Insert new ISEE ", input => Decimal.TryParse(input, out _) && Convert.ToDecimal(input) > 0);
+        
             Student student = new()
             {
                 FullName = fullName,
@@ -279,18 +277,19 @@ namespace University.BLogic
                 Address = address,
                 Email = email,
                 Phone = phone,
-                BirthYear = birthYear,
-                IsFullTime = isFullTime,
-                MaritalStatus = (Status)Enum.Parse(typeof(BLogic.Status), maritalStatus!.ToUpper()), // parse ritorna obj con il cast lo trasforma in enum status
+                BirthYear = DateTime.Parse(birthYearString),
+                IsFullTime = Boolean.Parse(isFullTime),
+                MaritalStatus = (Status)Enum.Parse(typeof(BLogic.Status), maritalStatus!.ToUpper()), 
                 Matricola = matricola,
-                RegistrationYear = registrationYear,
+                RegistrationYear = DateTime.Parse(registrationYear),
                 Degree = (Degrees)Enum.Parse(typeof(BLogic.Degrees), degree!.ToUpper()),
-                ISEE = isee
-                
+                ISEE = Decimal.Parse(isee)
+        
             };
         }
-
-        // Function to create a Professor object
+        /// <summary>
+        /// Inserts a new Professor object into the system by collecting user input and saving it to a JSON file.
+        /// </summary>
         static void InsertProfessor()
         {
             Console.Write("Enter Professor Full Name: ");
@@ -339,8 +338,13 @@ namespace University.BLogic
                 Salary = salary
             };
         }
-
-        public static void InsertFaculty()
+        /// <summary>
+        ///     Inserts a new Faculty object into the system by collecting user input and saving it to a JSON file.
+        /// </summary>
+        /// <author>
+        ///     
+        /// </author>
+        private static void InsertFaculty()
         {
             {
                 string name = GetFaculty();
@@ -374,43 +378,52 @@ namespace University.BLogic
             }
         }
 
+        /// <summary>
+        ///     Inserts a new Exam object into the system by collecting user input and saving it to a JSON file.
+        /// </summary>
+        /// <author>
+        ///     Delia Ricca
+        /// </author>
         public static void InsertExam()
         {
-            Console.Write("Enter Exam Name: ");
-            string name = Console.ReadLine();
-
-            string faculty = GetFaculty();
-
-            Console.Write("Enter CFU (Credits): ");
-            int cfu = int.Parse(Console.ReadLine());
-
-            Console.Write("Enter Exam Date (YYYY-MM-DD): ");
-            DateTime date = DateTime.Parse(Console.ReadLine());
-
-            Console.Write("Is the Exam Online? (true/false): ");
-            bool isOnline = bool.Parse(Console.ReadLine());
-
-            Console.Write("Enter Number of Participants: ");
-            int participants = int.Parse(Console.ReadLine());
-            
-            string examType = GetExamType();
-            
-            Console.Write("Is a Project Required? (true/false): ");
-            bool isProjectRequired = bool.Parse(Console.ReadLine());
-
-            int examint = int.Parse(examType);
-
-            Exam exam = new()
+            try
             {
-                Name = name!,
-                Faculty = (Faculties) int.Parse(faculty),
-                CFU = cfu,
-                Date = date,
-                IsOnline = isOnline,
-                Participants = participants,
-                ExamType = (ExamType) examint,
-                IsProjectRequired = isProjectRequired
-            };
+                string? name = GetValidInput("Enter Exam Name: ", input => string.IsNullOrEmpty(input));
+        
+                string faculty = GetFaculty();
+        
+                string cfu = GetValidInput("Enter CFU (Credits): ", input => !string.IsNullOrEmpty(input) && int.TryParse(input, out _));
+        
+                string date = GetValidInput("Enter Exam Date (YYYY-MM-DD): ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+        
+                string isOnline = GetValidInput("Is the Exam Online? (true / false): ", input => !string.IsNullOrEmpty(input) && bool.TryParse(input, out _));
+        
+                string participants = GetValidInput("Enter Number of Participants: ", input => !string.IsNullOrEmpty(input) && int.TryParse(input, out _));
+        
+                string examType = GetExamType();
+        
+                string isProjectRequired = GetValidInput("Is a Project Required? (true/false): ", input => !string.IsNullOrEmpty(input) && bool.TryParse(input, out _));
+        
+                Exam exam = new()
+                {
+                    Name = name!,
+                    Faculty = (Faculties)int.Parse(faculty),
+                    CFU = int.Parse(cfu),
+                    Date = DateTime.Parse(date),
+                    IsOnline = bool.Parse(isOnline),
+                    Participants = int.Parse(participants),
+                    ExamType = (ExamType)int.Parse(examType),
+                    IsProjectRequired = bool.Parse(isProjectRequired)
+                };
+        
+                var updatedList = ImportFromJson<Exam>();
+                updatedList.Add(exam);
+                ExportJson(updatedList);
+            }
+            catch (Exception ex) 
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
         }
 
         public static void InsertCourse()
@@ -544,13 +557,13 @@ namespace University.BLogic
             {
                 List<Student> students = ImportFromJson<Student>();
         
-                if (students?.Count == 0)
+                if (students.Count == 0)
                 {
                     Console.WriteLine("There are no students to show.\n");
                 }
                 else
                 {
-                    foreach (Student? student in students)
+                    foreach (Student student in students)
                     {
                         Console.WriteLine("Personal Details");
                         Console.WriteLine($"Fullname: {student.FullName}");
@@ -590,34 +603,28 @@ namespace University.BLogic
             try
             {
                 List<Exam> exams = ImportFromJson<Exam>();
-
+        
                 Console.Clear();
-
+        
                 if (exams.Count == 0)
                 {
-                    Console.WriteLine("There are no exams to show.\n");
+                    Console.WriteLine("No exams found.");
+                    return; ;
                 }
                 else
                 {
                     foreach (Exam exam in exams)
                     {
-                        Console.WriteLine("Id: " + exam.Id + "\n"); 
-                        Console.WriteLine("Faculty: " + exam.Faculty + "\n");
-                        Console.WriteLine("Exam Name: " + exam.Name + "\n");
-                        Console.WriteLine("CFU: " + exam.CFU + "\n");
-                        Console.WriteLine("Exam Date: " + exam.Date + "\n");
-
-                        if (exam.IsOnline)
-                        {
-                            Console.WriteLine("The exam is online");
-                        }
-                        else
-                        {
-                            Console.WriteLine("The exam is takes place on site");
-                        }
-
-                        Console.WriteLine("Participants: " + exam.Participants + "\n");
-
+                        Console.WriteLine($"Id: {exam.Id}\n");
+                        Console.WriteLine($"Faculty:  {exam.Faculty}\n");
+                        Console.WriteLine($"Exam Name: {exam.Name}\n");
+                        Console.WriteLine($"CFU: {exam.CFU}\n");
+                        Console.WriteLine($"Exam Date: {exam.Date}\n");
+        
+                        Console.WriteLine(exam.IsOnline ? "The exam is online" : "The exam takes place on site");
+        
+                        Console.WriteLine($"Participants: {exam.Participants}\n");
+        
                         Console.WriteLine("Exam Type:");
                         switch (exam.ExamType)
                         {
@@ -633,19 +640,12 @@ namespace University.BLogic
                             default:
                                 break;
                         }
-
-                        if (exam.IsProjectRequired)
-                        {
-                            Console.WriteLine("The exam requires a project\n");
-                        }
-                        else
-                        {
-                            Console.WriteLine("The exam doesn't require a project\n");
-                        }
+        
+                        Console.WriteLine(exam.IsProjectRequired ? "The exam requires a project\n" : "The exam doesn't require a project\n");
+        
                         Console.WriteLine(ConfigurationManager.AppSettings["SeparationLine"]);
-                    }                    
-                }               
-
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -669,16 +669,8 @@ namespace University.BLogic
                     return;
                 }
 
-                Console.WriteLine("Insert the ID of the professor (UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)");
-                string id = Console.ReadLine();
-
-                // Validate UUID and check length
-                while (!Guid.TryParse(id, out Guid guid) || id.Length != 36)
-                {
-                    Console.WriteLine("Invalid input - the ID must be in UUID format (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) and 36 characters long.");
-                    Console.WriteLine("Insert the ID of the professor again:");
-                    id = Console.ReadLine();
-                }
+                
+                string id = GetValidId();
 
                 Professor? prof = professors.Find(prof => prof.Id == Guid.Parse(id));
                 if (prof == null)
@@ -806,7 +798,6 @@ namespace University.BLogic
             try
             {
                 List<Student> students = ImportFromJson<Student>();
-                bool loop = true;
                 bool doWhile = true;
                 string n;
                 string prompt =
@@ -819,375 +810,248 @@ namespace University.BLogic
                     6.  Change Birth Year
                     7.  Change Status
                     8.  Change Full Time
-                    9.  Change ID
-                    10. Change Registration Year
-                    11. Change Faculty
-                    12. Change Degree
-                    13. Change ISEE
+                    9.  Change Registration Year
+                    10. Change Faculty
+                    11. Change Degree
+                    12. Change ISEE
                     """;
-
-                string prompt2 =
-                    """
-                    1. COMPUTER_SCIENCE,
-                    2. BUSINESS_AND_MANAGEMENT,
-                    3. MATHEMATICS,
-                    4. PSYCHOLOGY,
-                    5. LAW,
-                    6. FASHION_DESIGN,
-                    7. NURSING,
-                    8. LANGUAGES,
-                    9. BIOLOGY
-                    """;
-
+        
                 if (students?.Count == 0)
                 {
                     Console.WriteLine("There are no students saved.\n");
+                    return;
                 }
                 else
                 {
-
-                    Console.WriteLine("Insert the ID Matricola of the student");
-                    string matricola = Console.ReadLine();
-
-                    while (loop)
-                    {
-                        foreach (char s in matricola)
-                            if (!char.IsDigit(s))
-                                loop = false;
-
-                        if (matricola.Length == 7 && loop)
-                        {
-                            loop = false;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid input - the ID must be 7 numbers"); //not sure
-                            Console.Clear();
-                            Console.WriteLine("Insert the ID Matricola of the student again");
-                            matricola = Console.ReadLine();
-                            loop = true;
-                        }
-                    }
-
+                    string? matricola = GetValidInput("Insert the Matricola of the student ", input => !string.IsNullOrEmpty(input) && input.Length == 7);
+        
                     do
                     {
-                        loop = true;
-                        Student stud = students!.First(stud => stud.Matricola == matricola);
-                        Console.WriteLine($"Changing student {stud?.Matricola} infos");
-                        Console.WriteLine(separator);
-                        Console.WriteLine(prompt);
-                        Console.WriteLine("Which info do you want to change? (press a number)");
-                      
-                        n = Console.ReadKey().KeyChar.ToString();
-
-                        switch (n)
-                        {
-                            case "1":
-
-                                Console.WriteLine("Insert new name ");
-                                stud.FullName = Console.ReadLine();
-                                while (stud.FullName == null)
-                                {
-                                    Console.WriteLine("Invalid input - the name must be a string");
-                                    stud.FullName = Console.ReadLine();
-                                }
-                                break;
-
-                            case "2":
-                                
-                                stud.Gender = GetValidInput("Insert new gender (Male / Female / X)", input => input?.ToUpper() == "MALE" || input?.ToUpper() == "FEMALE" || input?.ToUpper() == "X");
-                                break;
-
-                            case "3":
-                                Console.WriteLine("Insert new address ");
-                                stud.Address = Console.ReadLine();
-                                break;
-
-                            case "4":
-                                Console.WriteLine("Insert new email ");
-                                stud.Email = Console.ReadLine();
-                                break;
-
-                            case "5":
-                                while (loop)
-                                {
-                                    Console.WriteLine("Insert new phone ");
-                                    string phone = Console.ReadLine();
-
-                                    for (int i = 0; i < phone?.Length; i++)
+                        Student? stud = students!.Find(stud => stud.Matricola == matricola);
+                        if(stud != null){
+                            Console.WriteLine($"Changing student {stud?.Matricola} infos");
+                            Console.WriteLine(separator);
+                            Console.WriteLine(prompt);
+                            Console.WriteLine("Which info do you want to change? (press a number)");
+            
+                            n = Console.ReadKey().KeyChar.ToString();
+            
+                            switch (n)
+                            {
+                                case "1":
+                                    stud!.FullName = GetValidInput("Insert new name ", input => !string.IsNullOrEmpty(input));
+                                    break;
+            
+                                case "2":
+                                    stud!.Gender = GetGender();
+                                    break;
+            
+                                case "3":
+                                    stud!.Address = GetValidInput("Insert new address ", input => !string.IsNullOrEmpty(input));
+                                    break;
+            
+                                case "4":
+                                    stud!.Email = GetValidInput("Insert new email ", input => !string.IsNullOrEmpty(input));
+                                    break;
+            
+                                case "5":
+                                    stud!.Phone = GetValidInput("Insert new phone ", input => !string.IsNullOrEmpty(input));
+                                    break;
+            
+                                case "6":
+                                    string birthYearString = GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                    stud!.BirthYear = DateTime.Parse(birthYearString);
+                                    break;
+            
+                                case "7":
+                                    string maritalStatus = GetMaritialStatus();
+                                    stud!.MaritalStatus = (Status)int.Parse(maritalStatus);
+                                    break;
+            
+                                case "8":
+                                    Console.WriteLine($"Change Full Time: from {stud!.IsFullTime} to {!stud.IsFullTime} ? (y / n)");
+                                    string answer = Console.ReadKey().KeyChar.ToString();
+                                    if (answer.Equals("y"))
                                     {
-                                        if (!Char.IsDigit(phone[i]))
-                                        {   
-                                            if( !(i == 0 && phone[i]=='+') )
-                                                loop = false;
-                                        }
+                                        stud.IsFullTime = !(stud.IsFullTime); 
                                     }
-
-                                    if (phone?.Length == 11 && loop)
-                                    {
-                                        stud.Phone = phone;
-                                        loop = false;
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Invalid input - the phone number must be + and 10 numbers");
-                                        loop = true;
-                                    }
-                                }
-
-                                break;
-
-                            case "6":
-                                Console.WriteLine("Insert new birth year ");
-                                stud.BirthYear = DateTime.Parse(Console.ReadLine()); // not sure, devo specificare il formato della data???
-                                break;
-
-                            case "7":
-                                Console.WriteLine("Insert new status ");
-                                string maritalStatus = GetMaritialStatus();
-                                stud.MaritalStatus = (Status)int.Parse(maritalStatus);
-                                break;
-
-                            case "8":
-                               
-                                Console.WriteLine($"Change Full Time: from {stud.IsFullTime} to {!stud.IsFullTime} ? (y / n)");
-                                string answer = Console.ReadKey().KeyChar.ToString();
-                                if (answer.Equals("y"))
-                                {
-                                    stud.IsFullTime = !(stud.IsFullTime); //dovrebbe andare ma ho i miei dubbi
-                                }
-                                break;
-
-                            case "9":
-                                Console.WriteLine("Insert new registration year ");
-                                stud.RegistrationYear = DateTime.Parse(Console.ReadLine());
-                                break;
-
-                            case "10":
-                                string faculty = GetFaculty();
-                                stud.Faculty = (Faculties)int.Parse(faculty); // new faculty
-
-                                break;
-
-                            case "11":
-                                string degree = GetDegree();
-                                stud.Degree = (Degrees)int.Parse(degree);
-                                break;
-
-                            case "12":
-                                while (loop)
-                                {
-                                    Console.WriteLine("Insert new ISEE ");
-                                    decimal isee = Convert.ToDecimal(Console.ReadLine());
-
-                                    if (isee > 0)
-                                    {
-                                        stud.ISEE = isee;
-                                        loop = false;
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Invalid input - the ISEE must be a positive number.");
-                                    }
-                                }
-                                break;
-
-                            default:
-                                Console.WriteLine("Invalid input.");
-                                break;
+                                    break;
+            
+                                case "9":
+                                    string registrationYear = GetValidInput("Insert new registration year (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                    stud!.RegistrationYear = DateTime.Parse(registrationYear);
+                                    break;
+            
+                                case "10":
+                                    string faculty = GetFaculty();
+                                    stud!.Faculty = (Faculties)int.Parse(faculty);
+                                    break;
+            
+                                case "11":
+                                    string degree = GetDegree();
+                                    stud!.Degree = (Degrees)int.Parse(degree);
+                                    break;
+            
+                                case "12":
+                                    string isee = GetValidInput("Insert new ISEE ", input => Decimal.TryParse(input, out _) && Convert.ToDecimal(input)>0);
+                                    stud!.ISEE = Convert.ToDecimal(isee);
+                                    break;
+            
+                                default:
+                                    Console.WriteLine("Invalid input.");
+                                    break;
+                            }
+            
+                            Console.WriteLine(separator);
+                            Console.WriteLine("Do you want to change something else about this student? (y / n)");
+                            char answerFinal = Console.ReadKey().KeyChar;
+            
+                            if (answerFinal  == 'n')
+                            {
+                                ExportJson(students!);
+                                Console.WriteLine("Update saved successfully");
+                                doWhile = false;
+                            }                            
+                        } else {
+                            Console.WriteLine("Student not found, try again.");
                         }
 
-                        Console.WriteLine(separator);
-                        Console.WriteLine("Do you want to change something else about this student? (yes / no)");
-                        char answerFinal = Console.ReadKey().KeyChar;
-
-                        if (answerFinal  == 'n')
-                        {
-                            ExportJson(students);
-                            Console.WriteLine("Update saved successfully");
-                            doWhile = false;
-                        }
                     } while (doWhile);
                 }
-
+        
             }
             catch (Exception ex)
             {
-                Console.WriteLine();
+                Console.WriteLine($"Error: {ex.Message}");
             }
         }
-
+                
         public static void UpdateEmployee()
         {
             try
             {
                 List<Employee> employees = ImportFromJson<Employee>();
-                bool loop = true;
-                bool doWhile = true;
-                string n;
-                string prompt =
-                    """
-                    1.  Change Full Name
-                    2.  Change Gender
-                    3.  Change Address
-                    4.  Change Email
-                    5.  Change Phone
-                    6.  Change Birth Year
-                    7.  Change Status
-                    8.  Change Full Time
-                    9.  Change Faculty
-                    10. Change Role
-                    11. Change HiringYear
-                    12. Change Salary
-                    """;
-
-                string prompt2 =
-                    """
-                    1. COMPUTER_SCIENCE,
-                    2. BUSINESS_AND_MANAGEMENT,
-                    3. MATHEMATICS,
-                    4. PSYCHOLOGY,
-                    5. LAW,
-                    6. FASHION_DESIGN,
-                    7. NURSING,
-                    8. LANGUAGES,
-                    9. BIOLOGY
-                    """;
-
                 if (employees.Count == 0)
                 {
                     Console.WriteLine("There are no employees saved.\n");
                 }
                 else
                 {
-                    string? id = GetValidInput("Insert the ID of the employee", input => !string.IsNullOrEmpty(input) && Guid.TryParse(input, out _));
-
-                    while (loop)
-                    {
-                        
-                            
-                        if (id?.Length == 36)
-                        {
-                            loop = false;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid input - the ID must be 36 alphanumeric characters."); //not sure
-                            Console.Clear();
-                            Console.WriteLine("Insert the ID of the employee again");
-                            id = Console.ReadLine();
-                            loop = true;
-                        }
-                    }
-
+                    bool doWhile = true;
+                    string n;
+                    string prompt =
+                        """
+                        1.  Change Full Name
+                        2.  Change Gender
+                        3.  Change Address
+                        4.  Change Email
+                        5.  Change Phone
+                        6.  Change Birth Year
+                        7.  Change Status
+                        8.  Change Full Time
+                        9.  Change Faculty
+                        10. Change Role
+                        11. Change HiringYear
+                        12. Change Salary
+                        """;
                     do
                     {
-                    
-                        Employee? emp = employees.First(emp => emp.Id == Guid.Parse(id!));
-                        Console.WriteLine($"Changing employee {emp.FullName} infos");
-                        Console.WriteLine(separator);
-                        Console.WriteLine(prompt);
-                        Console.WriteLine("Which info do you want to change? (press a number)");
-                        n = Console.ReadKey().KeyChar.ToString();
+                        string? id = GetValidId();
+                        Employee? emp = employees.Find(emp => emp.Id == Guid.Parse(id!));
+                        if (emp != null){
+                            Console.WriteLine($"Changing employee {emp.FullName} infos");
+                            Console.WriteLine(separator);
+                            Console.WriteLine(prompt);
+                            Console.WriteLine("Which info do you want to change? (press a number)");
+                            n = Console.ReadKey().KeyChar.ToString();
 
-                        switch (n)
-                        {
-                            case "1":
-                                emp.FullName = GetValidInput("Insert new name ", input => !string.IsNullOrEmpty(input));
-                                break;
+                            switch (n)
+                            {
+                                case "1":
+                                    emp.FullName = GetValidInput("Insert new name ", input => !string.IsNullOrEmpty(input));
+                                    break;
 
-                            case "2":
-                                emp.Gender = GetGender();
-                                break;
+                                case "2":
+                                    emp.Gender = GetGender();
+                                    break;
 
-                            case "3":
-                                emp.Address = GetValidInput("Insert new address ", input => !string.IsNullOrEmpty(input));
-                                break;
+                                case "3":
+                                    emp.Address = GetValidInput("Insert new address ", input => !string.IsNullOrEmpty(input));
+                                    break;
 
-                            case "4":
-                                emp.Email = GetValidInput("Insert new email", input => !string.IsNullOrEmpty(input));
-                                break;
+                                case "4":
+                                    emp.Email = GetValidInput("Insert new email", input => !string.IsNullOrEmpty(input));
+                                    break;
 
-                            case "5":
-                                string phone = GetValidInput("Insert new phone ", input => !string.IsNullOrEmpty(input));
-                                break;
+                                case "5":
+                                    string phone = GetValidInput("Insert new phone ", input => !string.IsNullOrEmpty(input));
+                                    break;
 
-                            case "6":
-                                string birthYearString = GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
-                                emp.BirthYear = DateTime.Parse(birthYearString);
-                                break;
+                                case "6":
+                                    string birthYearString = GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                    emp.BirthYear = DateTime.Parse(birthYearString);
+                                    break;
 
-                            case "7":
-                                string maritalStatus = GetMaritialStatus();
-                                emp.MaritalStatus = (Status)int.Parse(maritalStatus);
-                                break;
+                                case "7":
+                                    string maritalStatus = GetMaritialStatus();
+                                    emp.MaritalStatus = (Status)int.Parse(maritalStatus);
+                                    break;
 
-                            case "8":
-                                Console.WriteLine($"Change Full Time: from {emp.IsFullTime} to {!emp.IsFullTime} ? (y / n)");
-                                char answer = Console.ReadKey().KeyChar;
-                                if (answer == 'y')
-                                {
-                                    emp.IsFullTime = !emp.IsFullTime; //dovrebbe andare ma ho i miei dubbi
-                                }
-                                break;
-
-                            case "9":
-                                string faculty1 = GetFaculty();
-                                emp.Faculty = (Faculties)int.Parse(faculty1); //change faculty
-                                break;
-
-                            case "10":
-                                Console.WriteLine("Insert new degree (insert number)");
-                                string role = GetRole();
-                                emp.Role = (Roles)int.Parse(role);
-
-                                break;
-
-                            case "11":
-                                Console.WriteLine("Insert new hiring year ");
-                                emp.HiringYear = DateTime.Parse(Console.ReadLine());
-                                break;
-
-                            case "12":
-                                while (loop)
-                                {
-                                    Console.WriteLine("Insert new salary ");
-                                    decimal salary = Convert.ToDecimal(Console.ReadLine());
-
-                                    if (salary > 0)
+                                case "8":
+                                    Console.WriteLine($"Change Full Time: from {emp.IsFullTime} to {!emp.IsFullTime} ? (y / n)");
+                                    char answer = Console.ReadKey().KeyChar;
+                                    if (answer == 'y')
                                     {
-                                        emp.Salary = salary;
-                                        loop = false;
+                                        emp.IsFullTime = !emp.IsFullTime;
                                     }
-                                    else
-                                    {
-                                        Console.WriteLine("Invalid input - the ISEE must be a positive number.");
-                                    }
-                                }
-                                break;
+                                    break;
 
-                            default:
-                                Console.WriteLine("Invalid input.");
-                                break;
+                                case "9":
+                                    string faculty = GetFaculty();
+                                    emp.Faculty = (Faculties)int.Parse(faculty);
+                                    break;
+
+                                case "10":
+                                    string role = GetRole();
+                                    emp.Role = (Roles)int.Parse(role);
+                                    break;
+
+                                case "11":
+                                    string newYear = GetValidInput("Insert new hiring year ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                    emp.HiringYear = DateTime.Parse(newYear);
+                                    break;
+
+                                case "12":
+                                    string salary = GetValidInput("Insert new salary ", input => !string.IsNullOrEmpty(input) && decimal.TryParse(input, out _) && decimal.Parse(input) > 0);
+                                    emp.Salary = decimal.Parse(salary);
+                                    break;
+
+                                default:
+                                    Console.WriteLine("Invalid input.");
+                                    break;
+                            }
+
+                            Console.WriteLine(separator);
+                            Console.WriteLine("Do you want to change something else about this employee? (y / n)");
+                            char answerFinal = Console.ReadKey().KeyChar;
+
+                            if (answerFinal == 'n')
+                            {
+                                ExportJson(employees);
+                                Console.WriteLine("Update saved successfully");
+                                doWhile = false;
+                            }
+                        } else {
+                            Console.WriteLine("Employee not found, try again.");
                         }
 
-                        Console.WriteLine(separator);
-                        Console.WriteLine("Do you want to change something else about this employee? (y / n)");
-                        string answerFinal = Console.ReadKey().KeyChar.ToString();
-
-                        if (answerFinal.Equals("n"))
-                        {
-                            ExportJson<Employee>(employees);
-                            Console.WriteLine("Update saved successfully");
-                            doWhile = false;
-                        }
                     } while (doWhile);
                 }
 
             }
             catch (Exception ex)
             {
-                Console.WriteLine();
+                Console.WriteLine($"ERROR: {ex.Message}\n{ex.StackTrace}");
             }
         }
         
@@ -1197,179 +1061,143 @@ namespace University.BLogic
             {
                 List<Exam>? exams = ImportFromJson<Exam>();
 
-                Console.Clear();
-
+        
                 if (exams.Count == 0)
                 {
-                    Console.WriteLine("There are no exams.\n");
+                    Console.WriteLine("There are no exams saved.\n");
                     return;
                 }
                 else
                 {
+                    
+                    bool doWhile = true;
+                    string n;
+                    string prompt = """
+                        1 - Faculty
+                        2 - Name
+                        3 - CFU
+                        4 - Date
+                        5 - Modality (Online/On-site)
+                        6 - Number of participants
+                        7 - Exam type (Written, Oral, Written and Oral)
+                        8 - Project (is required or not)
+                        """;
+                    string? id = GetValidId();
+                    Exam? exam = exams.Find(exam => exam.Id == Guid.Parse(id));
 
-                    Console.WriteLine("Insert the ID of the professor (UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)");
-                    string id = Console.ReadLine();
-
-                    // Validate UUID and check length
-                    while (!Guid.TryParse(id, out Guid guid) || id.Length != 36)
+                    if (exam != null)
                     {
-                        Console.WriteLine("Invalid input - the ID must be in UUID format (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) and 36 characters long.");
-                        Console.WriteLine("Insert the ID of the professor again:");
-                        id = Console.ReadLine();
-                    }
+                        Console.WriteLine(prompt);
 
-                    if (!string.IsNullOrWhiteSpace(id)) //se è null, vuota o ha solo spazi bianchi!
-                    {
-                        Exam? exam = exams.Find(exam => exam.Id == Guid.Parse(id));
+                        string? preChoice = GetValidInput("Enter a number ", input => !string.IsNullOrEmpty(input));
+                        int choice = int.Parse(preChoice);
 
-                        if (exam != null)
+                        switch (choice)
                         {
-                            Console.WriteLine("Exam found! " +
-                                $"What do you want to change about the exam {exam}?\n");
-                            Console.WriteLine("Change the:\n");
+                            case 1:
+                                exam.Faculty = (Faculties)int.Parse(GetFaculty());
+                                break;
 
-                            Console.WriteLine("" +
-                                "1 - Faculty\n" +
-                                "2 - Name\n" +
-                                "3 - CFU\n" +
-                                "4 - Date\n" +
-                                "5 - Modality (Online/On-site)\n" +
-                                "6 - Number of participants\n" +
-                                "7 - Exam type (Written, Oral, Written and Oral)\n" +
-                                "8 - Project (is required or not)\n");
+                            case 2:
+                                Console.WriteLine("You have chosen to upgrade the name of the exam\n");
+                                Console.WriteLine($"Currently, the exam name is: {exam.Name},\n");
+                                string? newExamName = GetValidInput("Enter the new exam name: ", input => string.IsNullOrEmpty(input));
+                                if (newExamName != null)
+                                {
+                                    exam.Name = newExamName;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid name!");
+                                    return;
+                                }
+                                break;
 
-                            string? preChoice = Console.ReadLine();
-                            int choice = int.Parse(preChoice);
+                            case 3:
+                                Console.WriteLine("You have chosen to upgrade the number of CFU!\n");
+                                Console.WriteLine($"Currently, the exam number of CFU is: {exam.CFU},\n");
+                                string? inputCfu = GetValidInput("Enter the new number of CFU: ", input => string.IsNullOrEmpty(input));
+                                int newExamCFU = int.Parse(inputCfu);
 
-                            switch (choice)
-                            {
-                                case 1:
-                                    exam.Faculty = (Faculties) int.Parse(GetFaculty());
-                                    break;
+                                if (newExamCFU > 0)
+                                {
+                                    exam.CFU = newExamCFU;
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid number of CFU!");
+                                    return;
+                                }
+                                break;
 
-                                case 2:
-                                    Console.WriteLine("You have chosen to upgrade the name of the exam\n");
-                                    Console.WriteLine($"Currently, the exam name is: {exam.Name},\n" +
-                                        "Enter the new name: ");
-                                    string? newExamName = Console.ReadLine();
-                                    if (newExamName != null)
-                                    {
-                                        exam.Name = newExamName;
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Invalid name!");
-                                        return;
-                                    }
-                                    break;
+                            case 4:
+                                Console.WriteLine("You have chosen to upgrade the date of the exam!\n");
+                                Console.WriteLine($"Currently, the exam date is: {exam.Date},\n");
 
-                                case 3:
-                                    Console.WriteLine("You have chosen to upgrade the number of CFU!\n");
-                                    Console.WriteLine($"Currently, the exam number of CFU is: {exam.CFU},\n" +
-                                        "Enter the new number of CFU: ");
+                                string? inputExamDate = GetValidInput("Enter the new date (YYYY-MM-DD): ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                break;
 
-                                    string? inputCfu = Console.ReadLine();
-                                    int newExamCFU = int.Parse(inputCfu);
+                            case 5:
+                                Console.WriteLine("You have chosen to upgrade the modality of the exam!\n");
 
-                                    if (newExamCFU > 0)
-                                    {
-                                        exam.CFU = newExamCFU;
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Invalid number of CFU!");
-                                        return;
-                                    }
+                                Console.WriteLine($"Currently, the modality of the exam is: {(exam.IsOnline ? "Online" : "On-Site")}\n!");
+                                string? inputModality = GetValidInput("Please enter 1 if you want to change the exam online flag,\n" +
+                                    "Enter 0 otherwise!", input => !string.IsNullOrEmpty(input));
+                                bool changeModalityExam = bool.Parse(inputModality);
 
-                                    break;
-                                case 4:
-                                    Console.WriteLine("You have chosen to upgrade the date of the exam!\n");
-                                    Console.WriteLine($"Currently, the exam date is: {exam.Date},\n" +
-                                        "Enter the new date (with the format: YYYY/MM/DD ");
+                                if (changeModalityExam)
+                                {
+                                    exam.IsOnline = !exam.IsOnline;
+                                }
+                                else
+                                {
+                                    return;
+                                }
 
-                                    string? inputExamDate = Console.ReadLine();
+                                break;
 
-                                    if (DateTime.TryParseExact(inputExamDate, "yyyy/MM/dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime newExamDate))
-                                    {
-                                        exam.Date = newExamDate;
-                                        Console.WriteLine($"The exam date has been successfully updated to: {exam.Date}");
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine("Invalid date format!");
-                                        return; //or loop until the correct date?
-                                    }
-                                    break;
+                            case 6:
+                                Console.WriteLine("You have chosen to upgrade the number of participants of the exam!\n");
+                                Console.WriteLine($"Currently, the number of participants is: {exam.Participants}\n" +
+                                        "Please enter the new number of participants!");
+                                string? inputParticipants = GetValidInput("Please enter the new number of participants!: ", input => !string.IsNullOrEmpty(input));
+                                int newParticipants = int.Parse(inputParticipants);
 
-                                case 5:
-                                    Console.WriteLine("You have chosen to upgrade the modality of the exam!\n");
+                                exam.Participants = newParticipants;
+                                break;
 
-                                    Console.WriteLine($"Currently, the modality of the exam is: {(exam.IsOnline ? "Online" : "On-Site")}\n" +
-                                        "Please enter 1 if you want to change the exam online flag,\n" +
-                                        "Enter 0 otherwise!");
-                                    string? inputModality = Console.ReadLine();
-                                    bool changeModalityExam = bool.Parse(inputModality);
+                            case 7:
+                                exam.ExamType = (ExamType)int.Parse(GetExamType());
+                                break;
+                            case 8:
+                                Console.WriteLine("You have chosen to upgrade the project request for the exam!\n");
 
-                                    if (changeModalityExam)
-                                    {
-                                        exam.IsOnline = !exam.IsOnline;
-                                    }
-                                    else
-                                    {
-                                        return;
-                                    }
+                                Console.WriteLine($"Currently, the project is {(exam.IsProjectRequired ? "required" : "not required")}!\n!");
+                                string? inputRequired = GetValidInput("Please enter 1 if you want to change the required flag,\n" +
+                                    "Enter 0 otherwise!", input => !string.IsNullOrEmpty(input));
+                                bool changeModalityProject = bool.Parse(inputRequired);
 
-                                    break;
+                                if (changeModalityProject)
+                                {
+                                    exam.IsProjectRequired = !exam.IsProjectRequired;
+                                }
+                                else
+                                {
+                                    return;
+                                }
 
-                                case 6:
-                                    Console.WriteLine("You have chosen to upgrade the number of participants of the exam!\n");
-                                    Console.WriteLine($"Currently, the number of participants is: {exam.Participants}\n" +
-                                            "Please enter the new number of participants!");
-                                    string? inputParticipants = Console.ReadLine();
-                                    int newParticipants = int.Parse(inputParticipants);
-
-                                    exam.Participants = newParticipants;
-                                    break;
-
-                                case 7:
-                                    exam.ExamType = (ExamType) int.Parse(GetExamType());
-                                    break;
-                                case 8:
-                                    Console.WriteLine("You have chosen to upgrade the project request for the exam!\n");
-
-                                    Console.WriteLine($"Currently, the project is {(exam.IsProjectRequired ? "required" : "not required")}!\n" +
-                                        "Please enter 1 if you want to change the required flag,\n " +
-                                        "Enter 0 otherwise!");
-                                    string? inputRequired = Console.ReadLine();
-                                    bool changeModalityProject = bool.Parse(inputRequired);
-
-                                    if (changeModalityProject)
-                                    {
-                                        exam.IsProjectRequired = !exam.IsProjectRequired;
-                                    }
-                                    else
-                                    {
-                                        return;
-                                    }
-
-                                    break;
-                                default:
-                                    Console.WriteLine("Invalid choice!");
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("Exam not found.");
-                            return;
+                                break;
+                            default:
+                                Console.WriteLine("Invalid choice!");
+                                break;
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Invalid input.");
+                        Console.WriteLine("Exam not found.");
+                        return;
                     }
                 }
-
                 Console.WriteLine(ConfigurationManager.AppSettings["SeparationLine"]);
                 ExportJson(exams);
             }
@@ -1378,7 +1206,6 @@ namespace University.BLogic
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
-       
         #endregion
 
         #region Delete
@@ -1432,47 +1259,36 @@ namespace University.BLogic
         {
             bool loop = true;
             try
-            {
+            {   
+                List<Student> students = ImportFromJson<Student>();
                 while (loop)
                 {
-                    List<Student> students = ImportFromJson<Student>();
+        
                     if (students.Count == 0)
                     {
                         Console.WriteLine("There are no students saved");
                     }
                     else
                     {
-                        Console.WriteLine("Insert the ID Matricola of the student you want to delete");
-                        string matricola = Console.ReadLine();
-
-                        foreach (char s in matricola)
-                            if (!Char.IsDigit(s))
-                                loop = false;
-
-                        if (matricola.Length == 7 && loop)
-                        {
-                            loop = false;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid input - the ID must be 8 numbers"); //not sure
-                            Console.Clear();
-                            Console.WriteLine("Insert the ID Matricola of the student you want to delete again");
-                            matricola = Console.ReadLine();
-                            loop = true;
-                        }
-
+                        string? matricola = GetValidInput("Insert the ID Matricola of the student ", input => !string.IsNullOrEmpty(input) && input.Length == 7);
+                        
                         Student? stud = students.Find(stud => stud.Matricola == matricola);
-                        Console.WriteLine($"Are you sure you want to delete the student: {stud.FullName} ? ( y / n )");
-                        char answer = Console.ReadKey().KeyChar;
+                        if(stud != null){
 
-                        if (answer == 'y')
-                        {
-                            students.Remove(stud);
-                            ExportJson(students);
-                            Console.WriteLine("Student removed successfully");
-                            loop = false;
+                            Console.WriteLine($"Are you sure you want to delete the student: {stud!.FullName} ? (y / n)");
+                            char answer = Console.ReadKey().KeyChar;
+            
+                            if (answer == 'y')
+                            {
+                                students.Remove(stud);
+                                ExportJson(students);
+                                Console.WriteLine("Student removed successfully");
+                                loop = false;
+                            }
+
+                            Console.WriteLine("Student not found, try again");
                         }
+
                     }
                 }
             }
@@ -1482,50 +1298,40 @@ namespace University.BLogic
             }
         }
 
+
         public static void DeleteEmployee()
         {
             bool loop = true;
             try
             {
+                List<Employee> employees = ImportFromJson<Employee>();
+               
                 while (loop)
                 {
-                    List<Employee> employees = ImportFromJson<Employee>();
+                   
                     if (employees.Count == 0)
                     {
                         Console.WriteLine("There are no employee saved");
                     }
                     else
                     {
-                        Console.WriteLine("Insert the ID of the employee you want to delete");
-                        string id = Console.ReadLine();
+                       
+                        string id = GetValidInput("Insert the ID of the employee", input => !string.IsNullOrEmpty(input) && Guid.TryParse(input, out _));
+                        Employee? emp = employees.Find(emp => emp.Id.ToString() == id);
 
-                        foreach (char s in id)
-                        {
-                            if (id.Length == 36)
+                        if(emp != null){
+                            Console.WriteLine($"Are you sure you want to delete the employee: {emp.FullName} ? (y / n)");
+                            char answer = Console.ReadKey().KeyChar;
+
+                            if (answer == 'y')
                             {
+                                employees.Remove(emp);
+                                ExportJson(employees);
+                                Console.WriteLine("Employee removed successfully");
                                 loop = false;
                             }
-                            else
-                            {
-                                Console.WriteLine("Invalid input - the ID must be 36 alphanumeric characters."); //not sure
-                                Console.Clear();
-                                Console.WriteLine("Insert the ID of the employee again");
-                                id = Console.ReadLine();
-                                loop = true;
-                            }
                         }
-
-                        Employee? emp = employees.Find(emp => emp.Id.ToString() == id);
-                        Console.WriteLine($"Are you sure you want to delete the employee: {emp.FullName} ? (yes/no)");
-                        string answer = Console.ReadLine().ToLower();
-
-                        if (answer.Equals("yes"))
-                        {
-                            employees.Remove(emp);
-                            ExportJson(employees);
-                            Console.WriteLine("Employee removed successfully");
-                            loop = false;
-                        }
+                        Console.WriteLine("Employee not found please, try again");
                     }
                 }
             }
@@ -1535,67 +1341,64 @@ namespace University.BLogic
             }
         }
 
-        public static void DeleteExams()
+    public static void DeleteExams()
+{
+    try
+    {
+        List<Exam> exams = ImportFromJson<Exam>();
+        List<Professor> professors = ImportFromJson<Professor>();
+
+        if (exams.Count == 0)
         {
-            try
-            {
-                List<Exam> exams = ImportFromJson<Exam>();
-                List<Professor> professors = ImportFromJson<Professor>();
-        
-                Console.Clear();
-        
-                if (exams.Count == 0)
+            Console.WriteLine("There are no exams.\n");
+            return;
+        }
+        else
+        {
+            bool loop = true;
+            while (loop){
+                string id = GetValidInput("Insert the ID of the professor", input => !string.IsNullOrEmpty(input));
+                Exam? exam = exams.Find(e => e.Id == Guid.Parse(id));
+
+                if (exam != null)
                 {
-                    Console.WriteLine("There are no exams.\n");
-                    return;
+                    exams.Remove(exam); //Deletes the exam from the exam list
+                    ExportJson(exams);
+
+                    foreach (Professor professor in professors)
+                    {
+                        professor.Exams.RemoveAll(e => e.Id == exam.Id); //Deletes the exam from the professor's exam list
+                    }
+
+                    ExportJson(professors);
+
+                    Console.WriteLine($"The exam '{exam.Name}' has been successfully deleted.");
+                    loop = false;
                 }
                 else
                 {
-                    Console.WriteLine("Insert the ID of the professor (UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)");
-                    string id = Console.ReadLine();
-
-                    // Validate UUID and check length
-                    while (!Guid.TryParse(id, out Guid guid) || id.Length != 36)
-                    {
-                        Console.WriteLine("Invalid input - the ID must be in UUID format (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) and 36 characters long.");
-                        Console.WriteLine("Insert the ID of the professor again:");
-                        id = Console.ReadLine();
-                    }
-                    if (!string.IsNullOrWhiteSpace(id))
-                    {
-                        Exam? exam = exams.First(e => e.Id == Guid.Parse(id));
-        
-                        if (exam != null)
-                        {
-                            exams.Remove(exam); //Deletes the exam from the exam list
-                            ExportJson(exams);
-        
-                            foreach (Professor professor in professors)
-                            {
-                                professor.Exams.RemoveAll(e => e.Id == exam.Id); //Deletes the exam from the professor's exam list
-                            }
-        
-                            ExportJson(professors);
-        
-                            Console.WriteLine($"The exam '{exam.Name}' has been successfully deleted.");
-        
-                            exam = null;
-                        }
-                        else
-                        {
-                            Console.WriteLine("The exam was not found.");
-                        }
-                    }
+                    Console.WriteLine("The exam was not found, please try again.");
                 }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-            }
         }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
+}
         
         #endregion
 
+        /// <summary>
+        /// Imports a list of objects from a JSON file based on the specified type parameter.
+        /// </summary>
+        /// <typeparam name="T">The type of objects to import.</typeparam>
+        /// <returns>
+        /// A list of objects of type <typeparamref name="T"/> imported from the corresponding JSON file.
+        /// Returns an empty list if an error occurs or the file is empty.
+        /// </returns>
+        
         internal static List<T> ImportFromJson<T>()
         {
             try
@@ -1631,11 +1434,18 @@ namespace University.BLogic
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"Error: {ex.Message}\n{ex.StackTrace}");
                 return [];
             }
         }
 
+
+        /// <summary>
+        /// Exports a list of objects to a JSON file based on the specified type parameter.
+        /// </summary>
+        /// <typeparam name="T">The type of objects to import.</typeparam>
+        /// <returns></returns>
+        
         internal static bool ExportJson<T>(List<T> list)
         {
             try
