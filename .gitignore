@@ -7,6 +7,9 @@
 *.user
 *.sln.docstates
 
+data/csv/*
+data/json/*
+
 # Build results
 
 [Dd]ebug/
@@ -14,6 +17,7 @@
 x64/
 [Bb]in/
 [Oo]bj/
+
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
@@ -132,3 +136,5 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
+
+.fake
