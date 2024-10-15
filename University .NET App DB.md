@@ -150,7 +150,7 @@ GO
 
 ---
 
-### Relationship: Students_Exams
+### Relationship: Student - Exam
 
 **Table Structure:**
 
@@ -180,7 +180,7 @@ GO
 
 ---
 
-### Relationship: Students_Faculties
+### Relationship: Student - Faculty
 
 **Table Structure:**
 
@@ -203,7 +203,7 @@ GO
 ```
 
 ---
-### Relationship: Students_Courses
+### Relationship: Student - Course
 
 **Table Structure:**
 
@@ -227,3 +227,65 @@ CREATE TABLE [dbo].[Students_Courses](
 ) ON [PRIMARY]
 GO
 ```
+---
+
+### View: Professor
+
+**SQL Command:**
+
+```sql
+CREATE VIEW [dbo].[Professor] AS
+SELECT * 
+FROM [dbo].[Employee]
+WHERE Role = 5;
+GO
+```
+---
+
+### Relationship: Professor - Exam
+
+**Table Structure:**
+
+| Field Name     | ProfessorId    | ExamId    |
+|----------------|--------------|-------------|
+| Field Type     | uniqueidentifier | uniqueidentifier |
+
+**SQL Command:**
+
+```sql
+CREATE TABLE [dbo].[ProfessorExam] (
+    ProfessorId uniqueidentifier NOT NULL,
+    ExamId uniqueidentifier NOT NULL,
+    CONSTRAINT PK_ProfessorExam PRIMARY KEY (ProfessorId, ExamId),
+    CONSTRAINT FK_ProfessorExam_Professor FOREIGN KEY (ProfessorId)
+        REFERENCES [dbo].[Employee](Id),
+    CONSTRAINT FK_ProfessorExam_Exam FOREIGN KEY (ExamId)
+        REFERENCES [dbo].[Exam](Id)
+);
+GO
+```
+---
+
+### Relationship: Professor - Course
+
+**Table Structure:**
+
+| Field Name     | ProfessorId    | CourseId    |
+|----------------|--------------|-------------|
+| Field Type     | uniqueidentifier | uniqueidentifier |
+
+**SQL Command:**
+
+```sql
+GO
+CREATE TABLE [dbo].[ProfessorCourse] (
+    ProfessorId uniqueidentifier NOT NULL,
+    CourseId uniqueidentifier NOT NULL,
+    CONSTRAINT PK_ProfessorCourse PRIMARY KEY (ProfessorId, CourseId),
+    CONSTRAINT FK_ProfessorCourse_Professor FOREIGN KEY (ProfessorId)
+        REFERENCES [dbo].[Employee](Id),
+    CONSTRAINT FK_ProfessorCourse_Course FOREIGN KEY (CourseId)
+        REFERENCES [dbo].[Course](Id)
+);
+```
+---
