@@ -154,15 +154,15 @@ GO
 
 **Table Structure:**
 
-| Field Name  | Id | ExamId | Matricola |
+| Field Name  | Matricola | ExamId | Matricola |
 |-------------| ---- | ---- | ---- |
-| Field Type  | uniqueidentifier | uniqueidentifier | nchar |
+| Field Type  | nchar(7) | uniqueidentifier | nchar |
 
 **SQL Command:**
 
 ```sql
 CREATE TABLE [dbo].[Students_Exams](
-	[Id] [uniqueidentifier] NULL,
+	[Matricola] [nchar](7) NULL,
 	[ExamId] [uniqueidentifier] NOT NULL,
 	[Matricola] [nchar](7) NOT NULL,
 PRIMARY KEY CLUSTERED 
@@ -186,7 +186,7 @@ GO
 
 | Field Name  | Matricola | Faculty |
 |-------------| ---- | ---- |
-| Field Type  | nchar | smallint |
+| Field Type  | nchar(7) | smallint |
 
 **SQL Command:**
 
@@ -207,22 +207,22 @@ GO
 
 **Table Structure:**
 
-| Field Name     | StudentId    | CourseId    |
+| Field Name     | Matricola    | CourseId    |
 |----------------|--------------|-------------|
-| Field Type     | uniqueidentifier | uniqueidentifier |
+| Field Type     | nchar(7) | uniqueidentifier |
 
 **SQL Command:**
 
 ```sql
 CREATE TABLE [dbo].[Students_Courses](
-    [StudentId] [uniqueidentifier] NOT NULL,
+    [Matricola] [nchar](7) NOT NULL,
     [CourseId] [uniqueidentifier] NOT NULL,
  CONSTRAINT [PK_Students_Courses] PRIMARY KEY CLUSTERED 
 (
-    [StudentId] ASC,
+    [Matricola] ASC,
     [CourseId] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
- CONSTRAINT [FK_Students] FOREIGN KEY([StudentId]) REFERENCES [dbo].[Student] ([Id]),
+ CONSTRAINT [FK_Students] FOREIGN KEY([Matricola]) REFERENCES [dbo].[Student] ([Id]),
  CONSTRAINT [FK_Courses] FOREIGN KEY([CourseId]) REFERENCES [dbo].[Course] ([Id])
 ) ON [PRIMARY]
 GO
