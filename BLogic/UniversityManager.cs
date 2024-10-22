@@ -21,152 +21,6 @@ namespace University.BLogic
         readonly static string separator = Convert.ToString(ConfigurationManager.AppSettings["SeparationLine"])!; 
         readonly string filePath = Convert.ToString(ConfigurationManager.AppSettings["FileCourses"])!;
 
-
-        /// <summary>
-        /// Prompts the user a custom input and validates it using the provided validator function.
-        /// </summary>
-        /// <param name="prompt">The prompt message to display to the user.</param>
-        /// <param name="validator">A function to validate the user's input.</param>
-        /// <returns>A valid input string.</returns>
-        private static string GetValidInput(string prompt, Func<string?, bool> validator)
-        {
-            try
-            {
-                string? input;
-                do
-                {
-                    Console.WriteLine(prompt);
-                    input = Console.ReadLine();
-                    if (!validator(input))
-                    {
-                        Console.BackgroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Input non valido, riprova.");
-                        Console.ResetColor();
-                    }
-                } while (!validator(input));
-                return input!;
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                Console.WriteLine($"{ex.StackTrace}");
-                return string.Empty;
-            }
-        }
-
-        /// <summary>
-        /// Check the user input to match the Faculties enum.
-        /// </summary>
-        /// <returns>A string representing the integer that rapresent the correct Faculties enum.</returns>
-        private static string GetFaculty(){
-            string prompt =
-                """
-                Select Faculty:
-                1 - COMPUTER_SCIENCE
-                2 - BUSINESS_AND_MANAGEMENT,
-                3 - MATHEMATICS,
-                4 - PSYCHOLOGY,
-                5 - LAW,
-                6 - FASHION_DESIGN,
-                7 - NURSING,
-                8 - LANGUAGES,
-                9 - BIOLOGY
-                """;
-
-            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 10);
-        }
-        
-        /// <summary>
-        /// Check the user input to match the Roles enum.
-        /// </summary>
-        /// <returns>A string representing the integer that rapresent the correct Roles enum.</returns>
-        private static string GetRole(){
-            string prompt = """
-                Enter Role:
-                1 - TECHNICIAN,
-                2 - SECRETARY,
-                3 - CLEANING_STAFF,
-                4 - RECTOR,
-                """;
-
-            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 5);
-        }
-    
-        /// <summary>
-        /// Check the user input to match the Status enum.
-        /// </summary>
-        /// <returns>A string representing the integer that rapresent the correct Status enum.</returns>
-        private static string GetMaritialStatus(){
-            string prompt = """
-                Enter Marital Status:
-                1 - SINGLE,
-                2 - MARRIED,
-                3 - DIVORCED,
-                4 - WIDOWED,
-                """;
-            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 5);
-        }
-        
-        /// <summary>
-        /// Check the user input to match the Degree enum.
-        /// </summary>
-        /// <returns>A string representing the integer that rapresent the correct Degree enum.</returns>
-        private static string GetDegree(){
-            string prompt = """
-                Enter Degree:
-                1 - BACHELOR,
-                2 - MASTER,
-                3 - PHD,
-                4 - FIVE,
-                """;
-            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 5);
-        }
-
-        /// <summary>
-        /// Check the user input to match the ExamType enum.
-        /// </summary>
-        /// <returns>A string representing the integer that rapresent the correct ExamType enum.</returns>
-        private static string GetExamType(){
-            string prompt = """
-                Enter Exam Type:
-                1 - WRITTEN,
-                2 - ORAL,
-                3 - WRITTEN_AND_ORAL,
-                """;
-            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 4);
-        }   
-        
-        /// <summary>
-        /// Check the user input to match the Classroom enum.
-        /// </summary>
-        /// <returns>A string representing the integer that rapresent the correct Classroom enum.</returns>
-        private static string GetClassroom(){
-            string prompt = """
-                Select Classroom:
-                1 - A,
-                2 - B,
-                3 - C,
-                4 - D,
-                5 - E,
-                6 - F,
-                7 - LAB_1,
-                8 - LAB_2,
-                9 - LAB_3
-                """;
-
-            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 10);
-        }
-
-        private static string GetGender() => GetValidInput("Enter Gender (Male / Female / X): ", input => !string.IsNullOrEmpty(input) && (input?.ToUpper() == "MALE" || input?.ToUpper() == "FEMALE" || input?.ToUpper() == "X"));
-        
-        /// <summary>
-        /// Check the user input to match the Guid value.
-        /// </summary>
-        /// <returns>A string representing the integer that rapresent the correct Classroom enum.</returns>
-
-        private static string GetValidId() => GetValidInput($"Enter the ID: ", input => !string.IsNullOrEmpty(input) && Guid.TryParse(input, out _));
-
         #region Create
         /// <summary>
         /// Inserts a new Employee object into the system by collecting user input and saving it to a JSON file.
@@ -175,30 +29,29 @@ namespace University.BLogic
         {
             try
             {
-                
-                string? fullName = GetValidInput("Enter Employee Full Name: ", input => !string.IsNullOrEmpty(input));
+                string? fullName = Utils.GetValidInput("Enter Employee Full Name: ", input => !string.IsNullOrEmpty(input));
 
-                string? gender = GetGender();
+                string? gender = Utils.GetGender();
 
-                string? address = GetValidInput("Enter Address: ", input => !string.IsNullOrEmpty(input));
+                string? address = Utils.GetValidInput("Enter Address: ", input => !string.IsNullOrEmpty(input));
 
-                string? email = GetValidInput("Enter Email: ", input => !string.IsNullOrEmpty(input));
+                string? email = Utils.GetValidInput("Enter Email: ", input => !string.IsNullOrEmpty(input));
 
-                string? phone = GetValidInput("Enter Phone Number: ", input => !string.IsNullOrEmpty(input));
+                string? phone = Utils.GetValidInput("Enter Phone Number: ", input => !string.IsNullOrEmpty(input));
 
-                string birthYearString = GetValidInput("Enter Birth Year (YYYY-MM-DD): ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                string birthYearString = Utils.GetValidInput("Enter Birth Year (YYYY-MM-DD): ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
 
-                string isFullTimeString = GetValidInput("Is the Employee full-time? (y / n): ", input => !string.IsNullOrEmpty(input) && (input.ToUpper() == "Y" || input.ToUpper() == "N")); 
+                string isFullTimeString = Utils.GetValidInput("Is the Employee full-time? (y / n): ", input => !string.IsNullOrEmpty(input) && (input.ToUpper() == "Y" || input.ToUpper() == "N")); 
                  
-                string maritalStatus = GetMaritialStatus();
+                string maritalStatus = Utils.GetMaritialStatus();
 
-                string role = GetRole();
+                string role = Utils.GetRole();
                 
-                string faculty = GetFaculty();
+                string faculty = Utils.GetFaculty();
             
-                string hiringYearString = GetValidInput("Enter Hiring Day (YYYY-MM-DD): ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                string hiringYearString = Utils.GetValidInput("Enter Hiring Day (YYYY-MM-DD): ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
                 
-                string salaryString = GetValidInput("Enter Salary: ", input => !string.IsNullOrEmpty(input) && decimal.TryParse(input, out _));  
+                string salaryString = Utils.GetValidInput("Enter Salary: ", input => !string.IsNullOrEmpty(input) && decimal.TryParse(input, out _));  
 
                 int roleint = int.Parse(role);
                 int statusint = int.Parse(maritalStatus);
@@ -238,29 +91,29 @@ namespace University.BLogic
         public static void InsertStudent()
         {
             try{
-                string? fullName = GetValidInput("Enter Student Full Name: ", input => !string.IsNullOrEmpty(input));
+                string? fullName = Utils.GetValidInput("Enter Student Full Name: ", input => !string.IsNullOrEmpty(input));
         
-                string gender = GetGender();
+                string gender = Utils.GetGender();
             
-                string address = GetValidInput("Enter Student Address: ", input => !string.IsNullOrEmpty(input));
+                string address = Utils.GetValidInput("Enter Student Address: ", input => !string.IsNullOrEmpty(input));
             
-                string email = GetValidInput("Enter Student Email: ", input => !string.IsNullOrEmpty(input));
+                string email = Utils.GetValidInput("Enter Student Email: ", input => !string.IsNullOrEmpty(input));
             
-                string phone = GetValidInput("Enter Student Phone Number: ", input => !string.IsNullOrEmpty(input));
+                string phone = Utils.GetValidInput("Enter Student Phone Number: ", input => !string.IsNullOrEmpty(input));
             
-                string birthYearString = GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                string birthYearString = Utils.GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
             
-                string isFullTime = GetValidInput("Enter Full Time (y / n) ", input => !string.IsNullOrEmpty(input) && (input?.ToUpper() == "Y" || input?.ToUpper() == "N"));
+                string isFullTime = Utils.GetValidInput("Enter Full Time (y / n) ", input => !string.IsNullOrEmpty(input) && (input?.ToUpper() == "Y" || input?.ToUpper() == "N"));
             
-                string maritalStatus = GetMaritialStatus();
+                string maritalStatus = Utils.GetMaritialStatus();
             
-                string matricola = GetValidInput("Enter Student Matricola: ", input => !string.IsNullOrEmpty(input) && input.Length == 7);
+                string matricola = Utils.GetValidInput("Enter Student Matricola: ", input => !string.IsNullOrEmpty(input) && input.Length == 7);
             
-                string registrationYear = GetValidInput("Insert new registration year (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                string registrationYear = Utils.GetValidInput("Insert new registration year (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
             
-                string degree = GetDegree();
+                string degree = Utils.GetDegree();
             
-                string isee = GetValidInput("Insert new ISEE ", input => decimal.TryParse(input, out _) && Convert.ToDecimal(input) > 0);
+                string isee = Utils.GetValidInput("Insert new ISEE ", input => decimal.TryParse(input, out _) && Convert.ToDecimal(input) > 0);
             
                 Student student = new()
                 {
@@ -295,17 +148,17 @@ namespace University.BLogic
         {
          
             try{
-                string fullName = GetValidInput("Enter Professor Full Name: ", input => !string.IsNullOrEmpty(input));
+                string fullName = Utils.GetValidInput("Enter Professor Full Name: ", input => !string.IsNullOrEmpty(input));
         
-                string gender = GetGender();
+                string gender = Utils.GetGender();
 
-                string address = GetValidInput("Enter Address: ", input => !string.IsNullOrEmpty(input));
+                string address = Utils.GetValidInput("Enter Address: ", input => !string.IsNullOrEmpty(input));
 
-                string email = GetValidInput("Enter Email: ", input => !string.IsNullOrEmpty(input));
+                string email = Utils.GetValidInput("Enter Email: ", input => !string.IsNullOrEmpty(input));
 
-                string phone = GetValidInput("Enter Phone Number (10 digits): ", input => !string.IsNullOrEmpty(input) && input.Length == 10);
+                string phone = Utils.GetValidInput("Enter Phone Number (10 digits): ", input => !string.IsNullOrEmpty(input) && input.Length == 10);
 
-                string birthYearString = GetValidInput("Insert birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                string birthYearString = Utils.GetValidInput("Insert birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
                 DateTime birthYear = DateTime.Parse(birthYearString);
 
             
@@ -316,13 +169,13 @@ namespace University.BLogic
                     answer = Console.ReadKey().KeyChar;
                 }
                 
-                string maritalStatus = GetMaritialStatus();
-                string faculty = GetFaculty();
+                string maritalStatus = Utils.GetMaritialStatus();
+                string faculty = Utils.GetFaculty();
                 
-                string hiringYearString = GetValidInput("Insert hiring date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                string hiringYearString = Utils.GetValidInput("Insert hiring date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
                 DateTime hiringYear  = DateTime.Parse(hiringYearString);
 
-                decimal salary = decimal.Parse(GetValidInput("Enter Salary: ", input => !string.IsNullOrEmpty(input) && decimal.TryParse(input, out _)));
+                decimal salary = decimal.Parse(Utils.GetValidInput("Enter Salary: ", input => !string.IsNullOrEmpty(input) && decimal.TryParse(input, out _)));
 
                 Professor professore = new()
                 {
@@ -356,21 +209,21 @@ namespace University.BLogic
         {
             try
             {
-                string? name = GetValidInput("Enter Exam Name: ", input => !string.IsNullOrEmpty(input));
+                string? name = Utils.GetValidInput("Enter Exam Name: ", input => !string.IsNullOrEmpty(input));
         
-                string faculty = GetFaculty();
+                string faculty = Utils.GetFaculty();
         
-                string cfu = GetValidInput("Enter CFU (Credits): ", input => !string.IsNullOrEmpty(input) && int.TryParse(input, out _));
+                string cfu = Utils.GetValidInput("Enter CFU (Credits): ", input => !string.IsNullOrEmpty(input) && int.TryParse(input, out _));
         
-                string date = GetValidInput("Enter Exam Date (YYYY-MM-DD): ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                string date = Utils.GetValidInput("Enter Exam Date (YYYY-MM-DD): ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
         
-                string isOnline = GetValidInput("Is the Exam Online? (y / n): ", input => !string.IsNullOrEmpty(input) && (input.ToUpper() == "Y" || input.ToUpper() == "N"));
+                string isOnline = Utils.GetValidInput("Is the Exam Online? (y / n): ", input => !string.IsNullOrEmpty(input) && (input.ToUpper() == "Y" || input.ToUpper() == "N"));
         
-                string participants = GetValidInput("Enter Number of Participants: ", input => !string.IsNullOrEmpty(input) && int.TryParse(input, out _));
+                string participants = Utils.GetValidInput("Enter Number of Participants: ", input => !string.IsNullOrEmpty(input) && int.TryParse(input, out _));
         
-                string examType = GetExamType();
+                string examType = Utils.GetExamType();
         
-                string isProjectRequired = GetValidInput("Is a Project Required? (y / n): ", input => !string.IsNullOrEmpty(input) && (input.ToUpper() == "Y" || input.ToUpper() == "N"));
+                string isProjectRequired = Utils.GetValidInput("Is a Project Required? (y / n): ", input => !string.IsNullOrEmpty(input) && (input.ToUpper() == "Y" || input.ToUpper() == "N"));
         
                 Exam exam = new()
                 {
@@ -400,9 +253,9 @@ namespace University.BLogic
         public static void InsertCourse()
         {
             try{
-                string faculty = GetFaculty();
-                string name = GetValidInput("Enter Course Name: ", input => !string.IsNullOrEmpty(input));
-                int cfu = int.Parse(GetValidInput("Enter CFU (Credits): ", input => !string.IsNullOrEmpty(input) && int.TryParse(input, out _)));    
+                string faculty = Utils.GetFaculty();
+                string name = Utils.GetValidInput("Enter Course Name: ", input => !string.IsNullOrEmpty(input));
+                int cfu = int.Parse(Utils.GetValidInput("Enter CFU (Credits): ", input => !string.IsNullOrEmpty(input) && int.TryParse(input, out _)));    
                 Console.WriteLine($"Is the course online? (y / n)");
                 char answer = Console.ReadKey().KeyChar;
                 while (answer != 'y' && answer != 'n'){
@@ -410,7 +263,7 @@ namespace University.BLogic
                     answer = Console.ReadKey().KeyChar;
                 }
                 
-                string classroom = GetClassroom();
+                string classroom = Utils.GetClassroom();
 
                 int classroomint = int.Parse(classroom);
 
@@ -442,7 +295,7 @@ namespace University.BLogic
         /// </summary>
         public static void ReadEmployees()
         {
-            // Assuming you have a method to get the list of employees
+            // Assuming you have a method to Utils.Get the list of employees
             List<Employee> employees = ImportFromJson<Employee>();
 
             if (employees == null || employees.Count == 0)
@@ -683,7 +536,7 @@ namespace University.BLogic
                 }
                 else
                 {
-                    string? id = GetValidId();
+                    string? id = Utils.GetValidId();
         
                     do
                     {
@@ -700,27 +553,27 @@ namespace University.BLogic
                             switch (n){
                                 case "1":
                                     Console.WriteLine("Insert new name");
-                                    prof.FullName = GetValidInput("Insert new name ", input => !string.IsNullOrEmpty(input));
+                                    prof.FullName = Utils.GetValidInput("Insert new name ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "2":
-                                    prof.Gender = GetGender(); 
+                                    prof.Gender = Utils.GetGender(); 
                                     break;
 
                                 case "3":
-                                    prof.Address = GetValidInput("Insert new address ", input => !string.IsNullOrEmpty(input));
+                                    prof.Address = Utils.GetValidInput("Insert new address ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "4":
-                                    prof.Email = GetValidInput("Insert new email ", input => !string.IsNullOrEmpty(input));
+                                    prof.Email = Utils.GetValidInput("Insert new email ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "5":
-                                    prof.Phone = GetValidInput("Insert new phone (10 digits)", input => !string.IsNullOrEmpty(input) && input.Length == 10);
+                                    prof.Phone = Utils.GetValidInput("Insert new phone (10 digits)", input => !string.IsNullOrEmpty(input) && input.Length == 10);
                                     break;
 
                                 case "6":
-                                    string birthYearString = GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                    string birthYearString = Utils.GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
                                     prof.BirthYear = DateTime.Parse(birthYearString);
                                     break;
 
@@ -734,12 +587,12 @@ namespace University.BLogic
                                     break;
 
                                 case "8":
-                                    DateTime HiringYear = DateTime.Parse(GetValidInput("Insert new hiring year (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _)));
+                                    DateTime HiringYear = DateTime.Parse(Utils.GetValidInput("Insert new hiring year (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _)));
                                     prof.HiringYear = HiringYear;
                                     break;
 
                                 case "9":
-                                    string faculty = GetFaculty();
+                                    string faculty = Utils.GetFaculty();
                                     prof.Faculty = (Faculties) int.Parse(faculty); 
                                     
                                     break;
@@ -820,7 +673,7 @@ namespace University.BLogic
                 }
                 else
                 {
-                    string? matricola = GetValidInput("Insert the Matricola of the student ", input => !string.IsNullOrEmpty(input) && input.Length == 7);
+                    string? matricola = Utils.GetValidInput("Insert the Matricola of the student ", input => !string.IsNullOrEmpty(input) && input.Length == 7);
                     Student? stud = students!.Find(stud => stud.Matricola == matricola);
 
                     do
@@ -837,32 +690,32 @@ namespace University.BLogic
                             switch (n)
                             {
                                 case "1":
-                                    stud!.FullName = GetValidInput("Insert new name ", input => !string.IsNullOrEmpty(input));
+                                    stud!.FullName = Utils.GetValidInput("Insert new name ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "2":
-                                    stud!.Gender = GetGender();
+                                    stud!.Gender = Utils.GetGender();
                                     break;
 
                                 case "3":
-                                    stud!.Address = GetValidInput("Insert new address ", input => !string.IsNullOrEmpty(input));
+                                    stud!.Address = Utils.GetValidInput("Insert new address ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "4":
-                                    stud!.Email = GetValidInput("Insert new email ", input => !string.IsNullOrEmpty(input));
+                                    stud!.Email = Utils.GetValidInput("Insert new email ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "5":
-                                    stud!.Phone = GetValidInput("Insert new phone ", input => !string.IsNullOrEmpty(input));
+                                    stud!.Phone = Utils.GetValidInput("Insert new phone ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "6":
-                                    string birthYearString = GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                    string birthYearString = Utils.GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
                                     stud!.BirthYear = DateTime.Parse(birthYearString);
                                     break;
 
                                 case "7":
-                                    string maritalStatus = GetMaritialStatus();
+                                    string maritalStatus = Utils.GetMaritialStatus();
                                     stud!.MaritalStatus = (Status)int.Parse(maritalStatus);
                                     break;
 
@@ -876,22 +729,22 @@ namespace University.BLogic
                                     break;
 
                                 case "9":
-                                    string registrationYear = GetValidInput("Insert new registration year (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                    string registrationYear = Utils.GetValidInput("Insert new registration year (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
                                     stud!.RegistrationYear = DateTime.Parse(registrationYear);
                                     break;
 
                                 case "10":
-                                    string faculty = GetFaculty();
+                                    string faculty = Utils.GetFaculty();
                                     stud!.Faculty = (Faculties)int.Parse(faculty);
                                     break;
 
                                 case "11":
-                                    string degree = GetDegree();
+                                    string degree = Utils.GetDegree();
                                     stud!.Degree = (Degrees)int.Parse(degree);
                                     break;
 
                                 case "12":
-                                    string isee = GetValidInput("Insert new ISEE ", input => decimal.TryParse(input, out _) && Convert.ToDecimal(input) > 0);
+                                    string isee = Utils.GetValidInput("Insert new ISEE ", input => decimal.TryParse(input, out _) && Convert.ToDecimal(input) > 0);
                                     stud!.ISEE = Convert.ToDecimal(isee);
                                     break;
 
@@ -960,7 +813,7 @@ namespace University.BLogic
                         12. Change Salary
                         """;
                
-                    string? id = GetValidId();
+                    string? id = Utils.GetValidId();
                     Employee? emp = employees.Find(emp => emp.Id == Guid.Parse(id!));
                     do
                     {
@@ -974,32 +827,32 @@ namespace University.BLogic
                             switch (n)
                             {
                                 case "1":
-                                    emp.FullName = GetValidInput("Insert new name ", input => !string.IsNullOrEmpty(input));
+                                    emp.FullName = Utils.GetValidInput("Insert new name ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "2":
-                                    emp.Gender = GetGender();
+                                    emp.Gender = Utils.GetGender();
                                     break;
 
                                 case "3":
-                                    emp.Address = GetValidInput("Insert new address ", input => !string.IsNullOrEmpty(input));
+                                    emp.Address = Utils.GetValidInput("Insert new address ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "4":
-                                    emp.Email = GetValidInput("Insert new email", input => !string.IsNullOrEmpty(input));
+                                    emp.Email = Utils.GetValidInput("Insert new email", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "5":
-                                    string phone = GetValidInput("Insert new phone ", input => !string.IsNullOrEmpty(input));
+                                    string phone = Utils.GetValidInput("Insert new phone ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case "6":
-                                    string birthYearString = GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                    string birthYearString = Utils.GetValidInput("Insert new birth date (YYYY-MM-DD)", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
                                     emp.BirthYear = DateTime.Parse(birthYearString);
                                     break;
 
                                 case "7":
-                                    string maritalStatus = GetMaritialStatus();
+                                    string maritalStatus = Utils.GetMaritialStatus();
                                     emp.MaritalStatus = (Status)int.Parse(maritalStatus);
                                     break;
 
@@ -1013,22 +866,22 @@ namespace University.BLogic
                                     break;
 
                                 case "9":
-                                    string faculty = GetFaculty();
+                                    string faculty = Utils.GetFaculty();
                                     emp.Faculty = (Faculties)int.Parse(faculty);
                                     break;
 
                                 case "10":
-                                    string role = GetRole();
+                                    string role = Utils.GetRole();
                                     emp.Role = (Roles)int.Parse(role);
                                     break;
 
                                 case "11":
-                                    string newYear = GetValidInput("Insert new hiring year ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
+                                    string newYear = Utils.GetValidInput("Insert new hiring year ", input => !string.IsNullOrEmpty(input) && DateTime.TryParse(input, CultureInfo.InvariantCulture, DateTimeStyles.None, out _));
                                     emp.HiringYear = DateTime.Parse(newYear);
                                     break;
 
                                 case "12":
-                                    string salary = GetValidInput("Insert new salary ", input => !string.IsNullOrEmpty(input) && decimal.TryParse(input, out _) && decimal.Parse(input) > 0);
+                                    string salary = Utils.GetValidInput("Insert new salary ", input => !string.IsNullOrEmpty(input) && decimal.TryParse(input, out _) && decimal.Parse(input) > 0);
                                     emp.Salary = decimal.Parse(salary);
                                     break;
 
@@ -1091,7 +944,7 @@ namespace University.BLogic
                         8 - Project (is required or not)
                         """;
                     bool doWhile = true;
-                    string? id = GetValidId();
+                    string? id = Utils.GetValidId();
                     Exam? exam = exams.Find(exam => exam.Id == Guid.Parse(id));
 
                     do
@@ -1100,44 +953,44 @@ namespace University.BLogic
                         {
                             Console.WriteLine(prompt);
 
-                            string? preChoice = GetValidInput("Enter a number ", input => !string.IsNullOrEmpty(input));
+                            string? preChoice = Utils.GetValidInput("Enter a number ", input => !string.IsNullOrEmpty(input));
                             int choice = int.Parse(preChoice);
 
                             switch (choice)
                             {
                                 case 1:
-                                    exam.Faculty = (Faculties)int.Parse(GetFaculty());
+                                    exam.Faculty = (Faculties)int.Parse(Utils.GetFaculty());
                                     break;
 
                                 case 2:
-                                    exam.Name = GetValidInput("Enter the new exam name: ", input => !string.IsNullOrEmpty(input));
+                                    exam.Name = Utils.GetValidInput("Enter the new exam name: ", input => !string.IsNullOrEmpty(input));
                                     break;
 
                                 case 3:
-                                    string? inputCfu = GetValidInput("Enter the new number of CFU: ", input => int.TryParse(input, out _));
+                                    string? inputCfu = Utils.GetValidInput("Enter the new number of CFU: ", input => int.TryParse(input, out _));
                                     exam.CFU = int.Parse(inputCfu);
                                     break;
 
                                 case 4:
-                                    string? inputExamDate = GetValidInput("Enter the new date (YYYY-MM-DD): ", input => DateTime.TryParse(input, out _));
+                                    string? inputExamDate = Utils.GetValidInput("Enter the new date (YYYY-MM-DD): ", input => DateTime.TryParse(input, out _));
                                     exam.Date = DateTime.Parse(inputExamDate);
                                     break;
 
                                 case 5:
-                                    exam.IsOnline = GetValidInput("Enter 1 for Online or 0 for On-site: ", input => input == "1" || input == "0") == "1";
+                                    exam.IsOnline = Utils.GetValidInput("Enter 1 for Online or 0 for On-site: ", input => input == "1" || input == "0") == "1";
                                     break;
 
                                 case 6:
-                                    string? inputParticipants = GetValidInput("Enter the new number of participants: ", input => int.TryParse(input, out _));
+                                    string? inputParticipants = Utils.GetValidInput("Enter the new number of participants: ", input => int.TryParse(input, out _));
                                     exam.Participants = int.Parse(inputParticipants);
                                     break;
 
                                 case 7:
-                                    exam.ExamType = (ExamType)int.Parse(GetExamType());
+                                    exam.ExamType = (ExamType)int.Parse(Utils.GetExamType());
                                     break;
 
                                 case 8:
-                                    exam.IsProjectRequired = GetValidInput("Enter 1 if the project is required, 0 if not: ", input => input == "1" || input == "0") == "1";
+                                    exam.IsProjectRequired = Utils.GetValidInput("Enter 1 if the project is required, 0 if not: ", input => input == "1" || input == "0") == "1";
                                     break;
 
                                 default:
@@ -1199,7 +1052,7 @@ namespace University.BLogic
                     }
                     else
                     {
-                        string? id = GetValidId();
+                        string? id = Utils.GetValidId();
                         
                         Professor? prof = professors.Find(prof => prof.Id == Guid.Parse(id));
                         
@@ -1247,7 +1100,7 @@ namespace University.BLogic
                     }
                     else
                     {
-                        string? matricola = GetValidInput("Insert the Matricola of the student ", input => !string.IsNullOrEmpty(input) && input.Length == 7);
+                        string? matricola = Utils.GetValidInput("Insert the Matricola of the student ", input => !string.IsNullOrEmpty(input) && input.Length == 7);
                         
                         Student? stud = students.Find(stud => stud.Matricola == matricola);
                         if(stud != null){
@@ -1295,7 +1148,7 @@ namespace University.BLogic
                     else
                     {
                        
-                        string id = GetValidInput("Insert the ID of the employee", input => !string.IsNullOrEmpty(input) && Guid.TryParse(input, out _));
+                        string id = Utils.GetValidInput("Insert the ID of the employee", input => !string.IsNullOrEmpty(input) && Guid.TryParse(input, out _));
                         Employee? emp = employees.Find(emp => emp.Id.ToString() == id);
 
                         if(emp != null){
@@ -1320,6 +1173,7 @@ namespace University.BLogic
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
+        
         /// <summary>
         /// Delete an Exam object from the system by finding it, and removing it to its JSON file.
         /// </summary>
@@ -1338,7 +1192,7 @@ namespace University.BLogic
                     }
                     else
                     {
-                        string? id = GetValidId();
+                        string? id = Utils.GetValidId();
                         Exam? exam = Exams.Find(exam => exam.Id == Guid.Parse(id));
                         if(exam != null){
 

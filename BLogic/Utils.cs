@@ -31,7 +31,6 @@ namespace University.BLogic {
             UniversityManager.ExportJson(list);
             return list;
         }
-
         private static object ConvertValue(string value, Type targetType)
         {
             Console.WriteLine($"{value} {targetType}");
@@ -62,7 +61,6 @@ namespace University.BLogic {
                 return Convert.ChangeType(value, targetType);
             }
         }
-
         public static void PopulateProfessors()
         {
             List<Professor> professors = UniversityManager.ImportFromJson<Professor>()!;
@@ -126,5 +124,149 @@ namespace University.BLogic {
             string json = JsonSerializer.Serialize(faculties, option);
             File.WriteAllText(ConfigurationManager.AppSettings["FileFacultiesJson"]!, json);
         }
+        
+        /// <summary>
+        /// Prompts the user a custom input and validates it using the provided validator function.
+        /// </summary>
+        /// <param name="prompt">The prompt message to display to the user.</param>
+        /// <param name="validator">A function to validate the user's input.</param>
+        /// <returns>A valid input string.</returns>
+        internal static string GetValidInput(string prompt, Func<string?, bool> validator)
+        {
+            try
+            {
+                string? input;
+                do
+                {
+                    Console.WriteLine(prompt);
+                    input = Console.ReadLine();
+                    if (!validator(input))
+                    {
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Input non valido, riprova.");
+                        Console.ResetColor();
+                    }
+                } while (!validator(input));
+                return input!;
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                Console.WriteLine($"{ex.StackTrace}");
+                return string.Empty;
+            }
+        }
+
+        /// <summary>
+        /// Check the user input to match the Faculties enum.
+        /// </summary>
+        /// <returns>A string representing the integer that rapresent the correct Faculties enum.</returns>
+        internal static string GetFaculty(){
+            string prompt =
+                """
+                Select Faculty:
+                1 - COMPUTER_SCIENCE
+                2 - BUSINESS_AND_MANAGEMENT,
+                3 - MATHEMATICS,
+                4 - PSYCHOLOGY,
+                5 - LAW,
+                6 - FASHION_DESIGN,
+                7 - NURSING,
+                8 - LANGUAGES,
+                9 - BIOLOGY
+                """;
+
+            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 10);
+        }
+        
+        /// <summary>
+        /// Check the user input to match the Roles enum.
+        /// </summary>
+        /// <returns>A string representing the integer that rapresent the correct Roles enum.</returns>
+        internal static string GetRole(){
+            string prompt = """
+                Enter Role:
+                1 - TECHNICIAN,
+                2 - SECRETARY,
+                3 - CLEANING_STAFF,
+                4 - RECTOR,
+                """;
+
+            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 5);
+        }
+    
+        /// <summary>
+        /// Check the user input to match the Status enum.
+        /// </summary>
+        /// <returns>A string representing the integer that rapresent the correct Status enum.</returns>
+        internal static string GetMaritialStatus(){
+            string prompt = """
+                Enter Marital Status:
+                1 - SINGLE,
+                2 - MARRIED,
+                3 - DIVORCED,
+                4 - WIDOWED,
+                """;
+            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 5);
+        }
+        
+        /// <summary>
+        /// Check the user input to match the Degree enum.
+        /// </summary>
+        /// <returns>A string representing the integer that rapresent the correct Degree enum.</returns>
+        internal static string GetDegree(){
+            string prompt = """
+                Enter Degree:
+                1 - BACHELOR,
+                2 - MASTER,
+                3 - PHD,
+                4 - FIVE,
+                """;
+            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 5);
+        }
+
+        /// <summary>
+        /// Check the user input to match the ExamType enum.
+        /// </summary>
+        /// <returns>A string representing the integer that rapresent the correct ExamType enum.</returns>
+        internal static string GetExamType(){
+            string prompt = """
+                Enter Exam Type:
+                1 - WRITTEN,
+                2 - ORAL,
+                3 - WRITTEN_AND_ORAL,
+                """;
+            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 4);
+        }   
+        
+        /// <summary>
+        /// Check the user input to match the Classroom enum.
+        /// </summary>
+        /// <returns>A string representing the integer that rapresent the correct Classroom enum.</returns>
+        internal static string GetClassroom(){
+            string prompt = """
+                Select Classroom:
+                1 - A,
+                2 - B,
+                3 - C,
+                4 - D,
+                5 - E,
+                6 - F,
+                7 - LAB_1,
+                8 - LAB_2,
+                9 - LAB_3
+                """;
+
+            return GetValidInput(prompt, input => int.Parse(input!) > 0 && int.Parse(input!) < 10);
+        }
+
+        internal static string GetGender() => GetValidInput("Enter Gender (Male / Female / X): ", input => !string.IsNullOrEmpty(input) && (input?.ToUpper() == "MALE" || input?.ToUpper() == "FEMALE" || input?.ToUpper() == "X"));
+        
+        /// <summary>
+        /// Check the user input to match the Guid value.
+        /// </summary>
+        /// <returns>A string representing the integer that rapresent the correct Classroom enum.</returns>
+        internal static string GetValidId() => GetValidInput($"Enter the ID: ", input => !string.IsNullOrEmpty(input) && Guid.TryParse(input, out _));
     }    
 }

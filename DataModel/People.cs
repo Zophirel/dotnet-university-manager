@@ -31,6 +31,8 @@ namespace University.DataModel
         public DateTime RegistrationYear { get; set; }
         public Degrees Degree { get; set; }
         public decimal ISEE { get; set; }
+        public List<Exam> Exams { get; set; } = [];
+        public List<Courses> Courses { get; set; } = [];  
        
     }
 

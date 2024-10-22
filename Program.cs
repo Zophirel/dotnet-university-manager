@@ -1,5 +1,4 @@
-﻿using University.DataModel;
-
+﻿using University.BLogic;
 namespace University
 {
     internal class Program
@@ -7,7 +6,7 @@ namespace University
         static void Main(string[] args)
         {
             try{
-                Menu.ShowMainMenu();
+                Menu.ShowMenu();
             } catch (Exception e)
             {
                 Console.WriteLine(e.Message);
@@ -16,5 +15,7 @@ namespace University
 
             return;
         }
+    
     }
+    
 }
